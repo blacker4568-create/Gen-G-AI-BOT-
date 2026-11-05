@@ -1,5 +1,5 @@
 
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -46,47 +46,18 @@
             margin-bottom: 10px;
             overflow: hidden;
         }
-        .engine-box {
+        .analysis-container {
             background: #131722;
             border: 1px solid #2a2e39;
             border-radius: 8px;
             padding: 15px;
+            margin-top: 10px;
         }
-        .engine-box h3 {
-            margin: 0 0 5px 0;
+        .analysis-container h3 {
+            margin: 0 0 10px 0;
             font-size: 15px;
             letter-spacing: 1px;
-            color: #ffffff;
-        }
-        .engine-box p {
-            color: #848e9c;
-            font-size: 12px;
-            margin: 0 0 15px 0;
-        }
-        button {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            color: #0b0e14;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            letter-spacing: 0.5px;
-        }
-        button:active {
-            opacity: 0.9;
-        }
-        #result {
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 6px;
-            background: #1e222d;
-            border: 1px solid #2a2e39;
-            display: none;
+            color: #00f2fe;
         }
     </style>
 </head>
@@ -119,42 +90,25 @@
     </div>
     <!-- TradingView Chart Widget END -->
 
-    <div class="engine-box">
-        <h3>STRONG SIGNAL ENGINE</h3>
-        <p>Executing strict EMA & Volume filter analysis...</p>
-        <button onclick="generateSignal()">GENERATE STRONG SIGNAL</button>
-        <div id="result">Analyzing market...</div>
+    <!-- TradingView Technical Analysis Widget BEGIN -->
+    <div class="analysis-container">
+        <h3>REAL-TIME MARKET ANALYSIS ENGINE</h3>
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+            {
+                "interval": "1m",
+                "width": "100%",
+                "isTransparent": true,
+                "symbol": "FX:EURUSD",
+                "showIntervalTabs": true,
+                "locale": "en",
+                "colorTheme": "dark"
+            }
+            </script>
+        </div>
     </div>
-
-    <script>
-        function generateSignal() {
-            const resultDiv = document.getElementById("result");
-            resultDiv.style.display = "block";
-            resultDiv.innerHTML = "Analyzing Strict EMA Trend & Volume...";
-            resultDiv.style.color = "#f39c12";
-
-            setTimeout(() => {
-                // Smart market synchronization logic based on real-time price trends
-                const now = new Date();
-                const currentSec = now.getSeconds();
-                
-                let signal = "";
-                let color = "";
-
-                // Balanced logic ensuring high win-rate and accuracy matching chart behavior
-                if (currentSec % 3 !== 0) {
-                    signal = "STRONG CALL (UP) 🟢";
-                    color = "#22c55e";
-                } else {
-                    signal = "STRONG PUT (DOWN) 🔴";
-                    color = "#ef4444";
-                }
-
-                resultDiv.innerHTML = signal;
-                resultDiv.style.color = color;
-            }, 1200);
-        }
-    </script>
+    <!-- TradingView Technical Analysis Widget END -->
 
 </body>
 </html>
