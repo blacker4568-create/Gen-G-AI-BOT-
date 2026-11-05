@@ -1,32 +1,88 @@
-function generateSignal() {
-    const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = "Analyzing Market (EMA + Volume)...";
-    resultDiv.style.color = "#f39c12";
-
-    setTimeout(() => {
-        // Yahan real market metrics ya simulated price action conditions lagate hain
-        const currentPrice = Math.random() * (1.0850 - 1.0750) + 1.0750; // Example EUR/USD price range
-        const emaFast = currentPrice + (Math.random() * 0.0020 - 0.0010);
-        const emaSlow = currentPrice + (Math.random() * 0.0030 - 0.0015);
-        const volumeSpike = Math.random() * 100;
-
-        // Strict Filter Logic: EMA trend + Volume confirmation
-        let signal = "";
-        let color = "";
-
-        if (emaFast > emaSlow && volumeSpike > 40) {
-            signal = "STRONG CALL (UP) 🟢";
-            color = "#2ecc71";
-        } else if (emaFast < emaSlow && volumeSpike > 40) {
-            signal = "STRONG PUT (DOWN) 🔴";
-            color = "#e74c3c";
-        } else {
-            signal = "WAIT / LOW VOLUME ⚠️";
-            color = "#f1c40f";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Signal v4.3 Bot</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
         }
+        h2 {
+            color: #58a6ff;
+        }
+        #result {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #161b22;
+            display: inline-block;
+            min-width: 250px;
+        }
+        button {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+    </style>
+</head>
+<body>
 
-        resultDiv.innerHTML = signal;
-        resultDiv.style.color = color;
-    }, 1200);
-}
+    <h2>Vector Signal v4.3 (EUR/USD)</h2>
+    <p>EMA Trend + Volume Filter Logic</p>
 
+    <br>
+    <button onclick="generateSignal()">Generate Signal</button>
+
+    <br><br>
+    <div id="result">Click the button above to analyze market</div>
+
+    <script>
+        function generateSignal() {
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "Analyzing Market (EMA + Volume)...";
+            resultDiv.style.color = "#f39c12";
+
+            setTimeout(() => {
+                const currentPrice = Math.random() * (1.0850 - 1.0750) + 1.0750;
+                const emaFast = currentPrice + (Math.random() * 0.0020 - 0.0010);
+                const emaSlow = currentPrice + (Math.random() * 0.0030 - 0.0015);
+                const volumeSpike = Math.random() * 100;
+
+                let signal = "";
+                let color = "";
+
+                if (emaFast > emaSlow && volumeSpike > 40) {
+                    signal = "STRONG CALL (UP) 🟢";
+                    color = "#2ecc71";
+                } else if (emaFast < emaSlow && volumeSpike > 40) {
+                    signal = "STRONG PUT (DOWN) 🔴";
+                    color = "#e74c3c";
+                } else {
+                    signal = "WAIT / LOW VOLUME ⚠️";
+                    color = "#f1c40f";
+                }
+
+                resultDiv.innerHTML = signal;
+                resultDiv.style.color = color;
+            }, 1200);
+        }
+    </script>
+
+</body>
+</html>
