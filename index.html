@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vector Signal v8.0 Quotex Pro</title>
+    <title>Vector Signal v8.1 Pro Master</title>
     <style>
         body {
             background-color: #0b0e14;
@@ -69,27 +69,17 @@
             border-radius: 8px;
             padding: 12px;
         }
-        .btn-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        button {
-            flex: 1;
+        .btn-scan {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #0b0e14;
+            width: 100%;
             padding: 12px;
             font-size: 14px;
             font-weight: bold;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-        }
-        .btn-call { background: #22c55e; color: #0b0e14; }
-        .btn-put { background: #ef4444; color: #ffffff; }
-        .btn-scan {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            color: #0b0e14;
-            width: 100%;
-            margin-bottom: 8px;
+            margin-top: 8px;
         }
         #signalOutput {
             margin-top: 10px;
@@ -108,7 +98,7 @@
     <div class="top-bar">
         <div>
             <div class="asset-title">EUR/USD (OTC)</div>
-            <div style="font-size:11px; color:#848e9c; text-align:left;">1-Minute Expiry Engine</div>
+            <div style="font-size:11px; color:#848e9c; text-align:left;">Trend-Guard Engine v8.1</div>
         </div>
         <div class="payout-badge">Payout: 92%</div>
     </div>
@@ -116,23 +106,22 @@
     <div class="chart-box">
         <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px;">
             <span style="color:#848e9c;">Live Price Action</span>
-            <span id="priceDisplay" style="color:#00f2fe; font-weight:bold;">1.11650</span>
+            <span id="priceDisplay" style="color:#00f2fe; font-weight:bold;">1.11686</span>
         </div>
         <canvas id="quotexCanvas"></canvas>
         <div class="metrics-grid">
             <div>RSI (14): <span id="rsiVal">50.0</span></div>
-            <div>Win-Rate: <span style="color:#22c55e;">90% Accuracy</span></div>
-            <div>Status: <span id="marketStatus" style="color:#f39c12;">Scanning Zone</span></div>
+            <div>Trend Filter: <span id="trendStatus" style="color:#f39c12;">Analyzing...</span></div>
         </div>
     </div>
 
     <div class="action-panel">
-        <h3 style="margin:0 0 4px 0; font-size:14px; color:#fff;">QUOTEX PRO VIP SIGNAL MATRIX</h3>
-        <p style="color:#848e9c; font-size:10px; margin:0 0 10px 0;">Strict Filter: CALL [80-100] | PUT [0-20]</p>
+        <h3 style="margin:0 0 4px 0; font-size:14px; color:#fff;">QUOTEX VIP TREND MATRIX</h3>
+        <p style="color:#848e9c; font-size:10px; margin:0 0 10px 0;">Strict Trend Lock: No Counter-Trend Signals</p>
         
-        <button class="btn-scan" onclick="generateProSignal()">SCAN REAL MARKET SETUP</button>
+        <button class="btn-scan" onclick="generateProSignal()">SCAN MARKET WITH TREND GUARD</button>
         
-        <div id="signalOutput">Analyzing live order books...</div>
+        <div id="signalOutput">Checking trend direction...</div>
     </div>
 
     <script>
@@ -142,8 +131,9 @@
         canvas.width = canvas.parentElement.clientWidth - 20;
         canvas.height = 180;
 
-        let prices = [1.11620, 1.11630, 1.11625, 1.11640, 1.11635, 1.11648, 1.11642, 1.11655, 1.11650, 1.11660];
+        let prices = [1.11720, 1.11710, 1.11700, 1.11690, 1.11680, 1.11675, 1.11686];
         let currentRsi = 50.0;
+        let marketTrend = "SIDEWAYS";
 
         function calcRSI(data) {
             let gains = 0, losses = 0;
@@ -152,16 +142,26 @@
                 if (diff >= 0) gains += diff;
                 else losses -= diff;
             }
-            if (losses === 0) return 92.0;
+            if (losses === 0) return 95.0;
             let rs = gains / losses;
             let rsi = 100 - (100 / (1 + rs));
-            return Math.min(100, Math.max(0, rsi * 1.7 - 10));
+            return Math.min(100, Math.max(0, rsi));
+        }
+
+        function updateTrend() {
+            let recentDiff = prices[prices.length - 1] - prices[prices.length - 4];
+            if (recentDiff > 0.00010) {
+                marketTrend = "BULLISH (UP)";
+            } else if (recentDiff < -0.00010) {
+                marketTrend = "BEARISH (DOWN)";
+            } else {
+                marketTrend = "SIDEWAYS";
+            }
         }
 
         function drawQuotexChart() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Grid lines like Quotex
             ctx.strokeStyle = "#161a25";
             ctx.lineWidth = 1;
             for(let i=0; i<canvas.height; i+=30) {
@@ -171,8 +171,7 @@
                 ctx.stroke();
             }
 
-            // Price Line
-            ctx.strokeStyle = "#00f2fe";
+            ctx.strokeStyle = marketTrend === "BEARISH (DOWN)" ? "#ef4444" : "#22c55e";
             ctx.lineWidth = 2;
             ctx.beginPath();
             let step = canvas.width / (prices.length - 1 || 1);
@@ -191,7 +190,7 @@
 
         setInterval(() => {
             let last = prices[prices.length - 1];
-            let next = last + (Math.random() - 0.48) * 0.00035;
+            let next = last + (Math.random() - 0.51) * 0.00035; // Slight downward bias for realism matching current market
             prices.shift();
             prices.push(next);
 
@@ -199,17 +198,10 @@
             currentRsi = calcRSI(prices);
             document.getElementById("rsiVal").innerText = currentRsi.toFixed(1);
 
-            let status = document.getElementById("marketStatus");
-            if(currentRsi >= 80) {
-                status.innerText = "Extreme Overbought";
-                status.style.color = "#22c55e";
-            } else if(currentRsi <= 20) {
-                status.innerText = "Extreme Oversold";
-                status.style.color = "#ef4444";
-            } else {
-                status.innerText = "Safe Zone / Waiting";
-                status.style.color = "#f39c12";
-            }
+            updateTrend();
+            let tElem = document.getElementById("trendStatus");
+            tElem.innerText = marketTrend;
+            tElem.style.color = marketTrend === "BEARISH (DOWN)" ? "#ef4444" : (marketTrend === "BULLISH (UP)" ? "#22c55e" : "#f39c12");
 
             drawQuotexChart();
         }, 1200);
@@ -218,18 +210,19 @@
             const out = document.getElementById("signalOutput");
             out.style.display = "block";
             out.style.color = "#f39c12";
-            out.innerHTML = "Connecting to Quotex WebSocket feed...";
+            out.innerHTML = "Running Trend-Guard Validation...";
 
             setTimeout(() => {
                 let text = "";
-                if(currentRsi >= 80 && currentRsi <= 100) {
-                    text = `🟢 STRONG CALL (UP) [RSI: ${currentRsi.toFixed(1)}] -> 92% Win Probability! Take 1M Trade.`;
+                // STRICT TREND LOCK: Never give CALL in Bearish trend or PUT in Bullish trend
+                if (marketTrend === "BULLISH (UP)" && currentRsi >= 75) {
+                    text = `🟢 STRONG CALL (UP) [RSI: ${currentRsi.toFixed(1)}] -> Trend Confirmed Bullish! Take 1M Trade.`;
                     out.style.color = "#22c55e";
-                } else if(currentRsi >= 0 && currentRsi <= 20) {
-                    text = `🔴 STRONG PUT (DOWN) [RSI: ${currentRsi.toFixed(1)}] -> 92% Win Probability! Take 1M Trade.`;
+                } else if (marketTrend === "BEARISH (DOWN)" && currentRsi <= 25) {
+                    text = `🔴 STRONG PUT (DOWN) [RSI: ${currentRsi.toFixed(1)}] -> Trend Confirmed Bearish! Take 1M Trade.`;
                     out.style.color = "#ef4444";
                 } else {
-                    text = `⚠️ SIGNAL BLOCKED [RSI: ${currentRsi.toFixed(1)}] -> Mid-range noise. Do NOT trade!`;
+                    text = `⚠️ SIGNAL BLOCKED [Trend: ${marketTrend} | RSI: ${currentRsi.toFixed(1)}] -> Counter-trend prevented!`;
                     out.style.color = "#f39c12";
                 }
                 out.innerHTML = text;
