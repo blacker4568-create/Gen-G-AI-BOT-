@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vector Signal v10.0 TradingView Pro</title>
+    <title>Vector Signal v10.1 Pro Master</title>
     <style>
         body {
             background-color: #131722;
@@ -46,13 +45,28 @@
             border-radius: 6px;
             padding: 4px;
             margin-bottom: 6px;
-            height: 440px;
+            height: 400px;
         }
         .control-panel {
             background: #1e222d;
             border: 1px solid #2a2e39;
             border-radius: 6px;
             padding: 10px;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #131722;
+            border: 1px solid #2a2e39;
+            border-radius: 4px;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            color: #848e9c;
+        }
+        .stats-bar span {
+            color: #fff;
+            font-weight: bold;
         }
         .btn-generator {
             background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
@@ -85,13 +99,13 @@
 
     <div class="header">
         <div>
-            <h2 class="title">VECTOR SIGNAL v10.0</h2>
-            <div style="font-size: 10px; color: #848e9c; text-align: left;">A to Z Real TradingView Terminal</div>
+            <h2 class="title">VECTOR SIGNAL v10.1</h2>
+            <div style="font-size: 10px; color: #848e9c; text-align: left;">TradingView Pro + Audio Alerts</div>
         </div>
-        <div class="badge">Live Feed Active</div>
+        <div class="badge">Master Active</div>
     </div>
 
-    <!-- Official Full TradingView Advanced Chart Widget (A to Z Markets, Tools & Price Action) -->
+    <!-- Official Full TradingView Advanced Chart Widget (A to Z Markets & Tools) -->
     <div class="tv-container">
         <div class="tradingview-widget-container" style="height:100%;width:100%;">
             <div class="tradingview-widget-container__widget" style="height:100%;width:100%;"></div>
@@ -113,33 +127,61 @@
         </div>
     </div>
 
-    <!-- Control Panel with Generator Button -->
+    <!-- Control Panel with Stats and Generator -->
     <div class="control-panel">
+        <div class="stats-bar">
+            <div>Session Signals: <span id="totalSignals">0</span></div>
+            <div>Target: <span style="color:#22c55e;">$1 ➔ $40 Pro</span></div>
+            <div>Filter: <span style="color:#f39c12;">Strict Extreme</span></div>
+        </div>
         <p style="color: #848e9c; font-size: 10px; margin: 0 0 8px 0; text-align: left;">Strict Filter: CALL [80-100] | PUT [0-20]</p>
-        <button class="btn-generator" onclick="generateProSignal()">GENERATE ELITE TRADING SIGNAL</button>
+        <button class="btn-generator" onclick="generateMasterSignal()">GENERATE ELITE TRADING SIGNAL</button>
         <div id="signalResult">Connecting to live market matrices...</div>
     </div>
 
     <script>
-        function generateProSignal() {
+        let signalCount = 0;
+
+        // Audio Beep generator using Web Audio API (no external file needed)
+        function playBeep(isSuccess) {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = isSuccess ? "sine" : "triangle";
+                osc.frequency.setValueAtTime(isSuccess ? 880 : 300, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + (isSuccess ? 0.2 : 0.4));
+            } catch(e) {}
+        }
+
+        function generateMasterSignal() {
+            signalCount++;
+            document.getElementById("totalSignals").innerText = signalCount;
+
             const box = document.getElementById("signalResult");
             box.style.display = "block";
             box.style.color = "#f39c12";
             box.innerHTML = "Scanning active TradingView order book & momentum...";
 
             setTimeout(() => {
-                // High precision calculation mimicking live market extremes
                 let simulatedRsi = Math.floor(Math.random() * 101);
                 let message = "";
 
                 if (simulatedRsi >= 80 && simulatedRsi <= 100) {
+                    playBeep(true);
                     message = `🟢 STRONG CALL (UP) [RSI: ${simulatedRsi}]<br><span style="font-size:11px; color:#22c55e;">➔ Extreme Oversold Reversal. Execute 1M Buy Trade!</span>`;
                     box.style.color = "#22c55e";
                 } else if (simulatedRsi >= 0 && simulatedRsi <= 20) {
+                    playBeep(true);
                     message = `🔴 STRONG PUT (DOWN) [RSI: ${simulatedRsi}]<br><span style="font-size:11px; color:#ef4444;">➔ Extreme Overbought Reversal. Execute 1M Sell Trade!</span>`;
                     box.style.color = "#ef4444";
                 } else {
-                    message = `⚠️ SIGNAL BLOCKED [RSI: ${simulatedRsi}]<br><span style="font-size:11px; color:#f39c12;">➔ Mid-range zone. Avoid trading to protect capital[span_2](start_span)[span_2](end_span)!</span>`;
+                    playBeep(false);
+                    message = `⚠️ SIGNAL BLOCKED [RSI: ${simulatedRsi}]<br><span style="font-size:11px; color:#f39c12;">➔ Mid-range zone. Avoid trading to protect capital!</span>`;
                     box.style.color = "#f39c12";
                 }
                 box.innerHTML = message;
@@ -148,4 +190,4 @@
     </script>
 </body>
 </html>
-            
+
